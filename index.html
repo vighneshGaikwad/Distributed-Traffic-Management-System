@@ -1,0 +1,393 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Signal Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* (No changes to CSS) */
+        .light { width: 3rem; height: 3rem; border-radius: 9999px; transition: all 0.2s ease-in-out; }
+        .light.off { opacity: 0.3; }
+        .light.red.on { background-color: #ef4444; box-shadow: 0 0 15px 5px rgba(239, 68, 68, 0.6); }
+        .light.yellow.on { background-color: #facc15; box-shadow: 0 0 15px 5px rgba(250, 204, 21, 0.6); }
+        .light.green.on { background-color: #22c55e; box-shadow: 0 0 15px 5px rgba(34, 197, 94, 0.6); }
+        .pedestrian-light { width: 2.5rem; height: 2.5rem; transition: all 0.2s ease-in-out; }
+        .pedestrian-light.off { opacity: 0.3; }
+        .pedestrian-light.red.on { background-color: #ef4444; box-shadow: 0 0 10px 3px rgba(239, 68, 68, 0.6); }
+        .pedestrian-light.green.on { background-color: #22c55e; box-shadow: 0 0 10px 3px rgba(34, 197, 94, 0.6); }
+    </style>
+</head>
+<body class="bg-gray-800 text-white flex flex-col items-center justify-center min-h-screen font-sans p-4">
+
+    <div class="w-full max-w-4xl bg-gray-900 rounded-lg shadow-xl p-8 border border-gray-700">
+        <h1 class="text-3xl font-bold text-center mb-8 text-cyan-400">Traffic Signal Control System</h1>
+        
+        <div class="flex justify-around items-start mb-8 text-center">
+            <div>
+                <h2 class="text-xl mb-4 text-gray-300">Road A</h2>
+                <div class="flex justify-center space-x-8">
+                    <div class="flex items-center space-x-2">
+                        <div class="bg-black p-3 rounded-lg border-2 border-gray-700 flex flex-col space-y-2">
+                            <div id="signal-1-red" class="light red off bg-red-900"></div>
+                            <div id="signal-1-yellow" class="light yellow off bg-yellow-900"></div>
+                            <div id="signal-1-green" class="light green off bg-green-900"></div>
+                        </div>
+                        <div class="bg-black p-2 rounded-lg border-2 border-gray-700 flex flex-col space-y-2">
+                            <div id="signal-p1-red" class="pedestrian-light red off bg-red-900"></div>
+                            <div id="signal-p1-green" class="pedestrian-light green off bg-green-900"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                         <div class="bg-black p-3 rounded-lg border-2 border-gray-700 flex flex-col space-y-2">
+                            <div id="signal-2-red" class="light red off bg-red-900"></div>
+                            <div id="signal-2-yellow" class="light yellow off bg-yellow-900"></div>
+                            <div id="signal-2-green" class="light green off bg-green-900"></div>
+                        </div>
+                         <div class="bg-black p-2 rounded-lg border-2 border-gray-700 flex flex-col space-y-2">
+                            <div id="signal-p2-red" class="pedestrian-light red off bg-red-900"></div>
+                            <div id="signal-p2-green" class="pedestrian-light green off bg-green-900"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h2 class="text-xl mb-4 text-gray-300">Road B</h2>
+                <div class="flex justify-center space-x-8">
+                    <div class="flex items-center space-x-2">
+                        <div class="bg-black p-3 rounded-lg border-2 border-gray-700 flex flex-col space-y-2">
+                            <div id="signal-3-red" class="light red off bg-red-900"></div>
+                            <div id="signal-3-yellow" class="light yellow off bg-yellow-900"></div>
+                            <div id="signal-3-green" class="light green off bg-green-900"></div>
+                        </div>
+                         <div class="bg-black p-2 rounded-lg border-2 border-gray-700 flex flex-col space-y-2">
+                            <div id="signal-p3-red" class="pedestrian-light red off bg-red-900"></div>
+                            <div id="signal-p3-green" class="pedestrian-light green off bg-green-900"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="bg-black p-3 rounded-lg border-2 border-gray-700 flex flex-col space-y-2">
+                            <div id="signal-4-red" class="light red off bg-red-900"></div>
+                            <div id="signal-4-yellow" class="light yellow off bg-yellow-900"></div>
+                            <div id="signal-4-green" class="light green off bg-green-900"></div>
+                        </div>
+                        <div class="bg-black p-2 rounded-lg border-2 border-gray-700 flex flex-col space-y-2">
+                            <div id="signal-p4-red" class="pedestrian-light red off bg-red-900"></div>
+                            <div id="signal-p4-green" class="pedestrian-light green off bg-green-900"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-700 pt-6">
+            <div class="flex items-center justify-center space-x-6">
+                <div class="text-center">
+                    <button id="control-button" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed">
+                        Trigger Signal Change
+                    </button>
+                    <p class="text-xs text-gray-400 mt-2">Normal random cycle.</p>
+                </div>
+                <div class="text-center">
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="override-id-input" placeholder="e.g. 3" class="bg-gray-700 border border-gray-600 text-white text-center rounded-lg w-16 p-3 focus:ring-red-500 focus:border-red-500">
+                        <button id="override-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed">
+                            Override
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">Enter signal ID (1-4) to force its road green.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6">
+            <h3 class="text-lg mb-2 text-gray-300">Backend Log Stream</h3>
+            <div id="log-box" class="bg-gray-950 h-32 rounded-md p-4 overflow-y-auto font-mono text-sm text-gray-400 border border-gray-700"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // MODIFIED: Added selectors for new override elements
+            const controlButton = document.getElementById('control-button');
+            const overrideButton = document.getElementById('override-button');
+            const overrideInput = document.getElementById('override-id-input');
+            const logBox = document.getElementById('log-box');
+            
+            // (signals object is unchanged)
+            const signals = { '1': { red: document.getElementById('signal-1-red'), yellow: document.getElementById('signal-1-yellow'), green: document.getElementById('signal-1-green'), }, '2': { red: document.getElementById('signal-2-red'), yellow: document.getElementById('signal-2-yellow'), green: document.getElementById('signal-2-green'), }, '3': { red: document.getElementById('signal-3-red'), yellow: document.getElementById('signal-3-yellow'), green: document.getElementById('signal-3-green'), }, '4': { red: document.getElementById('signal-4-red'), yellow: document.getElementById('signal-4-yellow'), green: document.getElementById('signal-4-green'), }, 'p1': { red: document.getElementById('signal-p1-red'), green: document.getElementById('signal-p1-green'), }, 'p2': { red: document.getElementById('signal-p2-red'), green: document.getElementById('signal-p2-green'), }, 'p3': { red: document.getElementById('signal-p3-red'), green: document.getElementById('signal-p3-green'), }, 'p4': { red: document.getElementById('signal-p4-red'), green: document.getElementById('signal-p4-green'), }, };
+
+            // (log and setSignalColor functions are unchanged)
+            const log = (message) => {
+                logBox.innerHTML += `<p class="leading-relaxed">> ${message}</p>`;
+                logBox.scrollTop = logBox.scrollHeight;
+            };
+
+            const setSignalColor = (signalId, activeColor) => {
+                const signalGroup = signals[signalId];
+                if (!signalGroup) return;
+                Object.values(signalGroup).forEach(lightElement => {
+                    lightElement.classList.add('off');
+                    lightElement.classList.remove('on');
+                });
+                const activeLight = signalGroup[activeColor];
+                if (activeLight) {
+                    activeLight.classList.remove('off');
+                    activeLight.classList.add('on');
+                }
+            };
+            
+            // (initializeState function is unchanged)
+            const initializeState = async () => {
+                log("[WEB] Requesting initial signal status...");
+                const response = await fetch('/api/status');
+                const initialStatus = await response.json();
+                for (const [signalId, status] of Object.entries(initialStatus)) {
+                    setSignalColor(signalId, status);
+                }
+                log("[WEB] Initial state synchronized.");
+            };
+
+            // MODIFIED: SSE handler now disables/enables BOTH buttons
+            const eventSource = new EventSource('/stream');
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (data.type === 'log') {
+                    log(data.message);
+                } else if (data.type === 'update') {
+                    setSignalColor(data.id, data.status);
+                } else if (data.type === 'control') {
+                    const isDisabled = (data.action === 'disable_button');
+                    controlButton.disabled = isDisabled;
+                    overrideButton.disabled = isDisabled; // Also control the override button
+                }
+            };
+            
+            eventSource.onerror = function() {
+                log('[ERROR] SSE connection failed. Please check the Web Server.');
+                eventSource.close();
+            };
+
+            // (controlButton listener is unchanged)
+            controlButton.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/control', { method: 'POST' });
+                    if (response.status === 409) {
+                        const errorData = await response.json();
+                        log(`[CLIENT] Request failed: ${errorData.error}`);
+                    }
+                } catch (error) {
+                    log(`[CLIENT] Network error: ${error.message}`);
+                }
+            });
+
+            // ADDED: New event listener for the override button
+            overrideButton.addEventListener('click', async () => {
+                const signalId = overrideInput.value.trim();
+                if (!signalId) {
+                    log("[CLIENT] Please enter a signal ID (1-4) to override.");
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/override', { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ signal_id: signalId })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        log(`[CLIENT] Override failed: ${errorData.error}`);
+                    }
+                } catch (error) {
+                    log(`[CLIENT] Network error during override: ${error.message}`);
+                }
+            });
+
+            initializeState();
+        });
+    </script>
+</body>
+</html>
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Signal Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .light { width: 3rem; height: 3rem; border-radius: 9999px; transition: all 0.2s ease-in-out; }
+        .light.off { opacity: 0.3; }
+        .light.red.on { background-color: #ef4444; box-shadow: 0 0 15px 5px rgba(239, 68, 68, 0.6); }
+        .light.yellow.on { background-color: #facc15; box-shadow: 0 0 15px 5px rgba(250, 204, 21, 0.6); }
+        .light.green.on { background-color: #22c55e; box-shadow: 0 0 15px 5px rgba(34, 197, 94, 0.6); }
+        .pedestrian-light { width: 2.5rem; height: 2.5rem; transition: all 0.2s ease-in-out; }
+        .pedestrian-light.off { opacity: 0.3; }
+        .pedestrian-light.red.on { background-color: #ef4444; box-shadow: 0 0 10px 3px rgba(239, 68, 68, 0.6); }
+        .pedestrian-light.green.on { background-color: #22c55e; box-shadow: 0 0 10px 3px rgba(34, 197, 94, 0.6); }
+    </style>
+</head>
+<body class="bg-gray-800 text-white flex flex-col items-center justify-center min-h-screen font-sans p-4">
+
+    <div class="w-full max-w-4xl bg-gray-900 rounded-lg shadow-xl p-8 border border-gray-700">
+        <h1 class="text-3xl font-bold text-center mb-8 text-cyan-400">Traffic Signal Control System</h1>
+        
+        <div class="flex justify-around items-start mb-8 text-center">
+            <div>
+                <h2 class="text-xl mb-4 text-gray-300">Road A</h2>
+                <div class="flex justify-center space-x-8">
+                    <div class="flex items-center space-x-2">
+                        <div class="bg-black p-3 rounded-lg border-2 border-gray-700 flex flex-col space-y-2"><div id="signal-1-red" class="light red off bg-red-900"></div><div id="signal-1-yellow" class="light yellow off bg-yellow-900"></div><div id="signal-1-green" class="light green off bg-green-900"></div></div>
+                        <div class="bg-black p-2 rounded-lg border-2 border-gray-700 flex flex-col space-y-2"><div id="signal-p1-red" class="pedestrian-light red off bg-red-900"></div><div id="signal-p1-green" class="pedestrian-light green off bg-green-900"></div></div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                         <div class="bg-black p-3 rounded-lg border-2 border-gray-700 flex flex-col space-y-2"><div id="signal-2-red" class="light red off bg-red-900"></div><div id="signal-2-yellow" class="light yellow off bg-yellow-900"></div><div id="signal-2-green" class="light green off bg-green-900"></div></div>
+                         <div class="bg-black p-2 rounded-lg border-2 border-gray-700 flex flex-col space-y-2"><div id="signal-p2-red" class="pedestrian-light red off bg-red-900"></div><div id="signal-p2-green" class="pedestrian-light green off bg-green-900"></div></div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h2 class="text-xl mb-4 text-gray-300">Road B</h2>
+                <div class="flex justify-center space-x-8">
+                    <div class="flex items-center space-x-2">
+                        <div class="bg-black p-3 rounded-lg border-2 border-gray-700 flex flex-col space-y-2"><div id="signal-3-red" class="light red off bg-red-900"></div><div id="signal-3-yellow" class="light yellow off bg-yellow-900"></div><div id="signal-3-green" class="light green off bg-green-900"></div></div>
+                         <div class="bg-black p-2 rounded-lg border-2 border-gray-700 flex flex-col space-y-2"><div id="signal-p3-red" class="pedestrian-light red off bg-red-900"></div><div id="signal-p3-green" class="pedestrian-light green off bg-green-900"></div></div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="bg-black p-3 rounded-lg border-2 border-gray-700 flex flex-col space-y-2"><div id="signal-4-red" class="light red off bg-red-900"></div><div id="signal-4-yellow" class="light yellow off bg-yellow-900"></div><div id="signal-4-green" class="light green off bg-green-900"></div></div>
+                        <div class="bg-black p-2 rounded-lg border-2 border-gray-700 flex flex-col space-y-2"><div id="signal-p4-red" class="pedestrian-light red off bg-red-900"></div><div id="signal-p4-green" class="pedestrian-light green off bg-green-900"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-700 pt-6">
+            <div class="flex items-center justify-center space-x-12">
+                <div class="text-center">
+                    <button id="toggle-button" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 w-48">
+                        Start Automation
+                    </button>
+                    <p class="text-xs text-gray-400 mt-2">Start/Stop the automatic cycle.</p>
+                </div>
+                <div class="text-center">
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="override-id-input" placeholder="e.g. 3" class="bg-gray-700 border border-gray-600 text-white text-center rounded-lg w-20 p-3 focus:ring-red-500 focus:border-red-500">
+                        <button id="override-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed">
+                            Override
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">Enter signal ID (1-4) to force green.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6">
+            <h3 class="text-lg mb-2 text-gray-300">Backend Log Stream</h3>
+            <div id="log-box" class="bg-gray-950 h-40 rounded-md p-4 overflow-y-auto font-mono text-sm text-gray-400 border border-gray-700"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleButton = document.getElementById('toggle-button');
+            const overrideButton = document.getElementById('override-button');
+            const overrideInput = document.getElementById('override-id-input');
+            const logBox = document.getElementById('log-box');
+            
+            const signals = { '1': { red: document.getElementById('signal-1-red'), yellow: document.getElementById('signal-1-yellow'), green: document.getElementById('signal-1-green'), }, '2': { red: document.getElementById('signal-2-red'), yellow: document.getElementById('signal-2-yellow'), green: document.getElementById('signal-2-green'), }, '3': { red: document.getElementById('signal-3-red'), yellow: document.getElementById('signal-3-yellow'), green: document.getElementById('signal-3-green'), }, '4': { red: document.getElementById('signal-4-red'), yellow: document.getElementById('signal-4-yellow'), green: document.getElementById('signal-4-green'), }, 'p1': { red: document.getElementById('signal-p1-red'), green: document.getElementById('signal-p1-green'), }, 'p2': { red: document.getElementById('signal-p2-red'), green: document.getElementById('signal-p2-green'), }, 'p3': { red: document.getElementById('signal-p3-red'), green: document.getElementById('signal-p3-green'), }, 'p4': { red: document.getElementById('signal-p4-red'), green: document.getElementById('signal-p4-green'), }, };
+
+            const log = (message) => {
+                logBox.innerHTML += `<p class="leading-relaxed">> ${message}</p>`;
+                logBox.scrollTop = logBox.scrollHeight;
+            };
+
+            const setSignalColor = (signalId, activeColor) => {
+                const signalGroup = signals[signalId];
+                if (!signalGroup) return;
+                Object.values(signalGroup).forEach(el => el.classList.remove('on', 'off'));
+                Object.values(signalGroup).forEach(el => el.classList.add('off'));
+                if (signalGroup[activeColor]) {
+                    signalGroup[activeColor].classList.remove('off');
+                    signalGroup[activeColor].classList.add('on');
+                }
+            };
+            
+            const initializeState = async () => {
+                log("[WEB] Requesting initial signal status...");
+                const response = await fetch('/api/status');
+                const initialStatus = await response.json();
+                for (const [signalId, status] of Object.entries(initialStatus)) {
+                    setSignalColor(signalId, status);
+                }
+                log("[WEB] Initial state synchronized.");
+            };
+
+            const eventSource = new EventSource('/stream');
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (data.type === 'log') {
+                    log(data.message);
+                } else if (data.type === 'update') {
+                    setSignalColor(data.id, data.status);
+                } else if (data.type === 'control') {
+                    const isDisabled = (data.action === 'disable_buttons');
+                    toggleButton.disabled = isDisabled;
+                    overrideButton.disabled = isDisabled;
+                } else if (data.type === 'automation_status') {
+                    if (data.status === 'running') {
+                        toggleButton.textContent = 'Stop Automation';
+                        toggleButton.classList.remove('bg-cyan-600', 'hover:bg-cyan-700');
+                        toggleButton.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+                    } else { // stopped
+                        toggleButton.textContent = 'Start Automation';
+                        toggleButton.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
+                        toggleButton.classList.add('bg-cyan-600', 'hover:bg-cyan-700');
+                    }
+                }
+            };
+            
+            eventSource.onerror = () => {
+                log('[ERROR] SSE connection failed. Check Web Server.');
+                eventSource.close();
+            };
+
+            toggleButton.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/toggle_automation', { method: 'POST' });
+                    const data = await response.json();
+                    log(`[WEB] Server: ${data.message}`);
+                } catch (error) {
+                    log(`[CLIENT] Network error: ${error.message}`);
+                }
+            });
+
+            overrideButton.addEventListener('click', async () => {
+                const signalId = overrideInput.value.trim();
+                if (!signalId || isNaN(signalId) || signalId < 1 || signalId > 4) {
+                    log("[CLIENT] Invalid signal ID. Please enter 1-4.");
+                    return;
+                }
+                try {
+                    const response = await fetch('/api/override', { 
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ signal_id: signalId })
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        log(`[CLIENT] Override failed: ${errorData.error}`);
+                    }
+                } catch (error) {
+                    log(`[CLIENT] Network error during override: ${error.message}`);
+                }
+            });
+
+            initializeState();
+        });
+    </script>
+</body>
+</html>
